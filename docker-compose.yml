@@ -4,6 +4,7 @@ services:
       context: ./src
     environment:
       - DATABASE_URL=postgresql://${PG_USER}:${PG_PASSWORD}@db:5432/${PG_DB}
+      - ENV_TYPE=stable
 
     depends_on:
       - db
