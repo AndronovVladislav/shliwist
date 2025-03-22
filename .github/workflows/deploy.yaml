@@ -6,29 +6,12 @@ on:
       - main
   pull_request:
     types:
+      - opened
       - synchronize
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.12
-
-      - name: Set env
-        run: |
-          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        working-directory: ./src
-        run: |
-          curl -sSL https://install.python-poetry.org | python3.12 -
-          poetry install
+    uses: AndronovVladislav/shliwist/.github/workflows/setup.yml@main
 
   linter:
     runs-on: ubuntu-latest
@@ -36,19 +19,35 @@ jobs:
       - setup
 
     steps:
+      - name: Show repo structure
+        run: ls -R
+
       - name: Analysing the code with pylint
-        working-directory: ./src
+        working-directory: src
         run: |
           poetry run pylint $(git ls-files '*.py')
 
-  deploy:
+  tests:
     runs-on: ubuntu-latest
-    needs: linter
+    needs:
+      - setup
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Show repo structure
+        run: ls -R
 
+      - name: Run tests with pytest
+        working-directory: src
+        run: |
+          poetry run pytest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - linter
+      - tests
+
+    steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:

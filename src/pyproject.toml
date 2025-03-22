@@ -1,23 +1,20 @@
-[project]
+[tool.poetry]
 name = "shliwist"
 version = "0.1.0"
-description = ""
-authors = [
-    { name = "Andronov Vladislav", email = "hgg0896@gmail.com" }
-]
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "alembic (>=1.15.1,<2.0.0)",
-    "fastapi (>=0.115.11,<0.116.0)",
-    "uvicorn (>=0.34.0,<0.35.0)",
-    "sqlalchemy[postgresql-asyncpg] (>=2.0.39,<3.0.0)",
-    "pyjwt (>=2.10.1,<3.0.0)",
-    "bcrypt (>=4.3.0,<5.0.0)",
-    "psycopg2-binary (>=2.9.10,<3.0.0)",
-    "pydantic-settings (>=2.8.1,<3.0.0)",
-    "cryptography (>=44.0.2,<45.0.0)"
-]
+authors = ["Andronov Vladislav <hgg0896@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+alembic = ">=1.15.1,<2.0.0"
+fastapi = ">=0.115.11,<0.116.0"
+uvicorn = ">=0.34.0,<0.35.0"
+pyjwt = ">=2.10.1,<3.0.0"
+bcrypt = ">=4.3.0,<5.0.0"
+psycopg2-binary = ">=2.9.10,<3.0.0"
+pydantic-settings = ">=2.8.1,<3.0.0"
+cryptography = ">=44.0.2,<45.0.0"
+sqlalchemy = { extras = ["postgresql-asyncpg"], version = "^2.0.39" }
 
 
 [build-system]
@@ -26,4 +23,12 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.6"
+pytest = "^8.3.5"
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = "tests"
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-vvv --strict-markers --tb=short"
