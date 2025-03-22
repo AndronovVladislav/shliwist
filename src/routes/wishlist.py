@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from src.routes.auth.validation import get_current_username
 from src.schemas.wishlist import WishlistItemResponse, WishlistItemCreateRequest, WishlistItemUpdateRequest
-from src.services.user import (
+from src.services.wishlist import (
     get_user_wishlist as get_user_wishlist_service,
     create_wishlist_item as create_wishlist_item_service,
     assign_wishlist_item as assign_wishlist_item_service,
