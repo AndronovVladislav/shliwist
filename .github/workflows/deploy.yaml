@@ -41,14 +41,24 @@ jobs:
         run: |
           poetry run pylint $(git ls-files '*.py')
 
-  deploy:
+  tests:
     runs-on: ubuntu-latest
-    needs: linter
+    needs:
+      - setup
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Run tests with pytest
+        working-directory: ./src
+        run: |
+          poetry run pytest
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - linter
+      - tests
+
+    steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
