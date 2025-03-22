@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./src
+    environment:
+      - DATABASE_URL=postgresql://${PG_USER}:${PG_PASSWORD}@db:5432/${PG_DB}
+      - ENV_TYPE=dev
+
+    depends_on:
+      - db
+    ports:
+      - '8000:8000'
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target: /src
+          ignore:
+            - .venv
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+
+    ports:
+      - '5432:5432'
+
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U ${PG_USER} -d ${PG_DB}' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pg_data:
