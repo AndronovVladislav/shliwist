@@ -1,0 +1,25 @@
+[project]
+name = "shliwist"
+version = "0.1.0"
+description = ""
+authors = [
+    { name = "Andronov Vladislav", email = "hgg0896@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic (>=1.15.1,<2.0.0)",
+    "fastapi (>=0.115.11,<0.116.0)",
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "sqlalchemy[postgresql-asyncpg] (>=2.0.39,<3.0.0)",
+    "pyjwt (>=2.10.1,<3.0.0)",
+    "bcrypt (>=4.3.0,<5.0.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
+    "pydantic-settings (>=2.8.1,<3.0.0)",
+    "cryptography (>=44.0.2,<45.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
