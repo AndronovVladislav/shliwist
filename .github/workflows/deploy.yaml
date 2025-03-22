@@ -26,7 +26,7 @@ jobs:
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
       - name: Install dependencies
-        working-directory: ./src
+        working-directory: src
         run: |
           curl -sSL https://install.python-poetry.org | python3.12 -
           poetry install
@@ -37,8 +37,11 @@ jobs:
       - setup
 
     steps:
+      - name: Show repo structure
+        run: ls -R
+
       - name: Analysing the code with pylint
-        working-directory: ./src
+        working-directory: src
         run: |
           poetry run pylint $(git ls-files '*.py')
 
@@ -48,8 +51,11 @@ jobs:
       - setup
 
     steps:
+      - name: Show repo structure
+        run: ls -R
+
       - name: Run tests with pytest
-        working-directory: ./src
+        working-directory: src
         run: |
           poetry run pytest
 
