@@ -35,6 +35,12 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Create JWT cert files
+        run: |
+          mkdir -p src/certs
+          openssl genrsa -out src/certs/jwt-private.pem 2048
+          openssl rsa -in src/certs/jwt-private.pem -outform PEM -pubout -out src/certs/jwt-public.pem
+
       - name: Run Makefile tests
         working-directory: ./src
         run: make test
