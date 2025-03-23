@@ -8,7 +8,7 @@ class WishlistItem(Base):
     acceptor_id = mapped_column(ForeignKey('users.id'))
     donor_id = mapped_column(ForeignKey('users.id'), nullable=True)
 
-    title: Mapped[int]
+    title: Mapped[str]
     price: Mapped[float]
     link: Mapped[str]
     description: Mapped[str]
