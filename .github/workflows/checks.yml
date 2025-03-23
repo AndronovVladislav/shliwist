@@ -49,11 +49,11 @@ jobs:
       postgres:
         image: postgres:15
         ports:
-          - 5432:5432
+          - 5433:5432
         env:
           POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_db
-          POSTGRES_DB: test_password
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -61,7 +61,8 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+      ENV_TYPE: testing
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout
@@ -71,11 +72,13 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Apply Alembic migrations
-        run: ENV_TYPE=testing alembic upgrade head
+        working-directory: ./src
+        run:  poetry run alembic upgrade head
 
       - name: Check for model/schema mismatch
+        working-directory: ./src
         run: |
-          output=$(ENV_TYPE=testing alembic check 2>&1)
+          output=$(ENV_TYPE=testing poetry run alembic check 2>&1)
           echo "$output"
       
           if echo "$output" | grep -q "No new upgrade operations detected"; then

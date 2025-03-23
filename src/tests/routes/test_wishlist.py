@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
-from src.models import User, WishlistItem
+from src.models import WishlistItem
 from src.schemas.wishlist import WishlistItemResponse
 
 
@@ -20,7 +20,7 @@ async def test_create_wishlist_item(client: AsyncClient):
     for item, value in reference.items():
         assert data[item] == value
     assert data['donor_id'] is None
-    assert data['is_active'] == True
+    assert data['is_active'] is True
 
 
 @pytest.mark.asyncio

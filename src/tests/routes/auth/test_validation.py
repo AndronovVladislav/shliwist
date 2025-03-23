@@ -27,7 +27,7 @@ async def test_get_current_auth_user(mocker, user_1: User):
 
 
 @pytest.mark.asyncio
-async def test_get_current_auth_user_not_found(mocker, access_token):
+async def test_get_current_auth_user_not_found(mocker):
     """Тестирует случай, когда пользователь не найден"""
     mocker.patch('src.routes.auth.validation.get_user_by_username', return_value=None)
 

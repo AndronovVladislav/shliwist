@@ -1,9 +1,7 @@
 import pytest
 from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import User, WishlistItem
-from src.models.utils import connection
 from src.schemas.wishlist import WishlistItemCreateRequest, WishlistItemUpdateRequest
 from src.services.wishlist import (
     create_wishlist_item,
