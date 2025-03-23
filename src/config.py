@@ -11,7 +11,7 @@ def get_env_file() -> str:
         case 'stable':
             return '.stable.env'
         case 'testing':
-            return '.test.env'
+            return '.testing.env'
         case _:
             return '.env'
 

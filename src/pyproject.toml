@@ -24,6 +24,10 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.6"
 pytest = "^8.3.5"
+pytest-cov = "^6.0.0"
+httpx = "^0.28.1"
+pytest-asyncio = "^0.25.3"
+pytest-mock = "^3.14.0"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -31,4 +35,4 @@ testpaths = "tests"
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
-addopts = "-vvv --strict-markers -p no:warnings --tb=short"
+addopts = "-v --cov-report=html --cov=routes --cov=services --cov=models --cov=schemas --strict-markers -p no:warnings --tb=short"

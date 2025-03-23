@@ -23,7 +23,6 @@ def get_current_token_payload(token: str = Depends(get_current_token)) -> dict:
     """
     Декодирует access или refresh токен.
     """
-    print(token)
     try:
         payload = decode_jwt(token)
     except InvalidTokenError as e:
