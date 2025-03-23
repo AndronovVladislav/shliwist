@@ -41,3 +41,49 @@ jobs:
       - name: Run Makefile tests
         working-directory: ./src
         run: make test
+
+  validate-migrations:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      ENV_TYPE: testing
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Apply Alembic migrations
+        working-directory: ./src
+        run:  poetry run alembic upgrade head
+
+      - name: Check for model/schema mismatch
+        working-directory: ./src
+        run: |
+          output=$(ENV_TYPE=testing poetry run alembic check 2>&1)
+          echo "$output"
+      
+          if echo "$output" | grep -q "No new upgrade operations detected"; then
+            echo "Models and DB schema are in sync."
+          else
+            echo "Detected schema/model mismatch!"
+            exit 1
+          fi
