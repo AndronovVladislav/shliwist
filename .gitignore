@@ -107,6 +107,7 @@ celerybeat.pid
 
 # Security
 .env
+.stable.env
 .venv
 venv/
 env.bak/

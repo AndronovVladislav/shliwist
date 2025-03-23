@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Response, HTTPException
 
 from src.routes.auth.validation import get_current_refresh_payload
 from src.schemas.auth import UserSignupRequest, UserLoginRequest, LoggedInUserResponse
@@ -12,14 +12,14 @@ router = APIRouter(prefix='/auth', tags=['Auth'])
 
 
 @router.post('/signup')
-async def signup(user_data: UserSignupRequest) -> int:
+async def signup(user_data: UserSignupRequest) -> Response:
     """
     Регистрация нового пользователя.
     """
     new_user = await signup_service(user_data)
     if new_user:
-        return status.HTTP_201_CREATED
-    return status.HTTP_500_INTERNAL_SERVER_ERROR
+        return Response(status_code=status.HTTP_201_CREATED)
+    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @router.post('/signin')
