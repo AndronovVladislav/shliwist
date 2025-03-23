@@ -35,10 +35,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run tests with pytest
+      - name: Run Makefile tests
         working-directory: ./src
-        run: |
-          poetry run pytest
+        run: make test
 
   deploy:
     runs-on: ubuntu-latest
