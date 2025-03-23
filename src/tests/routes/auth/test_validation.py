@@ -1,10 +1,8 @@
-from datetime import timedelta
-
 import pytest
 from fastapi import HTTPException
 
 from src.models import User
-from src.routes.auth.utils import TokenType, create_jwt
+from src.routes.auth.utils import TokenType
 from src.routes.auth.validation import (
     get_current_token_payload,
     validate_token_type,
@@ -14,30 +12,18 @@ from src.routes.auth.validation import (
 
 
 @pytest.fixture
-def access_token() -> str:
-    """Создаёт валидный access-токен"""
-    return create_jwt('test_user', TokenType.ACCESS, timedelta(minutes=1))
-
-
-@pytest.fixture
-def refresh_token() -> str:
-    """Создаёт валидный refresh-токен"""
-    return create_jwt('test_user', TokenType.REFRESH, timedelta(minutes=5))
-
-
-@pytest.fixture
 def invalid_token() -> str:
     """Создаёт невалидный токен"""
     return 'invalid.token.payload'
 
 
 @pytest.mark.asyncio
-async def test_get_current_auth_user(mocker, access_token):
+async def test_get_current_auth_user(mocker, user_1: User):
     """Тестирует получение пользователя по access-токену"""
-    mocker.patch('src.routes.auth.validation.get_user_by_username', return_value=User(username='test_user'))
+    mocker.patch('src.routes.auth.validation.get_user_by_username', return_value=user_1)
 
     user = await get_current_user()
-    assert user.username == 'test_user'
+    assert user.username == 'test_user_1'
 
 
 @pytest.mark.asyncio
@@ -63,25 +49,29 @@ def test_validate_token_type(token_type):
     assert exc_info.value.status_code == 401
 
 
-@pytest.mark.parametrize('token_fixture, expected_type', [
-    ('access_token', TokenType.ACCESS),
-    ('refresh_token', TokenType.REFRESH)
-])
-@pytest.mark.asyncio
-async def test_get_current_token_payload(token_fixture, expected_type, request):
+@pytest.mark.parametrize(
+    'token_fixture, expected_type',
+    [
+        ('access_token', TokenType.ACCESS),
+        ('refresh_token', TokenType.REFRESH)
+    ],
+)
+def test_get_current_token_payload(token_fixture, expected_type, request):
     """Тестирует декодирование валидных токенов (и access, и refresh)"""
     token = request.getfixturevalue(token_fixture)
     payload = get_current_token_payload(token)
 
-    assert payload['sub'] == 'test_user'
+    assert payload['sub'] == 'test_user_1'
     assert payload['token_type'] == expected_type
 
 
-@pytest.mark.parametrize('token_fixture, expected_status, expected_detail', [
-    ('invalid_token', 401, 'Невалидный JWT-токен'),
-])
-@pytest.mark.asyncio
-async def test_get_current_token_payload_invalid(token_fixture, expected_status, expected_detail, request):
+@pytest.mark.parametrize(
+    'token_fixture, expected_status, expected_detail',
+    [
+        ('invalid_token', 401, 'Невалидный JWT-токен'),
+    ],
+)
+def test_get_current_token_payload_invalid(token_fixture, expected_status, expected_detail, request):
     """Тестирует обработку невалидных токенов"""
     token = request.getfixturevalue(token_fixture)
 
@@ -92,24 +82,28 @@ async def test_get_current_token_payload_invalid(token_fixture, expected_status,
     assert exc_info.value.detail == expected_detail
 
 
-@pytest.mark.parametrize('token_fixture, expected_type', [
-    ('refresh_token', TokenType.REFRESH)
-])
-@pytest.mark.asyncio
-async def test_get_current_refresh_payload(token_fixture, expected_type, request):
+@pytest.mark.parametrize(
+    'token_fixture, expected_type',
+    [
+        ('refresh_token', TokenType.REFRESH)
+    ],
+)
+def test_get_current_refresh_payload(token_fixture, expected_type, request):
     """Тестирует валидацию refresh-токена"""
     token = request.getfixturevalue(token_fixture)
     payload = get_current_refresh_payload(token)
 
-    assert payload['sub'] == 'test_user'
+    assert payload['sub'] == 'test_user_1'
     assert payload['token_type'] == expected_type
 
 
-@pytest.mark.parametrize('token_fixture, expected_status, expected_detail', [
-    ('invalid_token', 401, 'Невалидный JWT-токен'),
-])
-@pytest.mark.asyncio
-async def test_get_current_refresh_payload_invalid(token_fixture, expected_status, expected_detail, request):
+@pytest.mark.parametrize(
+    'token_fixture, expected_status, expected_detail',
+    [
+        ('invalid_token', 401, 'Невалидный JWT-токен'),
+    ],
+)
+def test_get_current_refresh_payload_invalid(token_fixture, expected_status, expected_detail, request):
     """Тестирует обработку невалидного refresh-токена"""
     token = request.getfixturevalue(token_fixture)
 
