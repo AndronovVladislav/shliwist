@@ -12,6 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Provide env files
+        run: |
+          echo "${{ secrets.BACKEND_ENV_FILE }}" > src/env/.stable.env
+          echo "${{ secrets.DOCKER_COMPOSE_ENV_FILE }}" > .env
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -38,10 +43,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /${{ secrets.SSH_USER }}/shliwist
-            echo "${{ secrets.BACKEND_ENV_FILE }}" > src/env/.stable.env
-            echo "${{ secrets.DOCKER_COMPOSE_ENV_FILE }}" > .env
-            echo "${{ secrets.POSTGRES_SECRET_MANIFEST }}" > k8s/postgres/secret.yml
+            echo "${{ secrets.POSTGRES_SECRET_MANIFEST }}" > shliwist/k8s/postgres/secret.yml
 
             export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
             kubectl rollout restart deployment shliwist-deployment
