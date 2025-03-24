@@ -1,6 +1,8 @@
+import logging.config
 import os
 from pathlib import Path
 
+import yaml
 from pydantic import Field, computed_field
 from pydantic.types import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,6 +20,15 @@ def get_env_file() -> str:
 
 BASE_DIR = Path(__file__).parent
 ENV_FILE = BASE_DIR / 'env' / get_env_file()
+LOG_DIR = 'logs'
+
+
+def setup_logging(default_path='logging.yml') -> None:
+    Path(LOG_DIR).mkdir(exist_ok=True)
+
+    with open(default_path, 'r') as f:
+        config = yaml.safe_load(f)
+        logging.config.dictConfig(config)
 
 
 class ConfigBase(BaseSettings):
@@ -69,4 +80,5 @@ class Settings(ConfigBase):
     uvicorn: UvicornSettings = Field(default_factory=UvicornSettings)
 
 
+setup_logging()
 settings = Settings()

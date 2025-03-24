@@ -21,4 +21,5 @@ jobs:
             git pull
             echo "${{ secrets.BACKEND_ENV_FILE }}" > src/env/.stable.env
             echo "${{ secrets.DOCKER_COMPOSE_ENV_FILE }}" > .env
-            docker compose up -d --build
+            echo "${{ secrets.POSTGRES_SECRET_MANIFEST }}" > k8s/postgres.yml
+            kubectl apply -f -R k8s/

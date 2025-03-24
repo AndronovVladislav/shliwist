@@ -1,7 +1,9 @@
+import os
 from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.config import settings
 from src.models.utils import db_helper
@@ -19,10 +21,17 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router)
 app.include_router(wishlist_router)
 
+Instrumentator().instrument(app).expose(app)
+
 
 @app.get('/healthcheck')
 async def healthcheck():
     return {'status': 'ok'}
+
+
+@app.get("/whoami")
+def whoami():
+    return {"pod": os.getenv("HOSTNAME")}
 
 
 if __name__ == '__main__':

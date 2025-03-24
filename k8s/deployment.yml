@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shliwist-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shliwist
+  template:
+    metadata:
+      labels:
+        app: shliwist
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: shliwist
+          image: ghcr.io/andronovvladislav/shliwist:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ENV_TYPE
+              value: stable
