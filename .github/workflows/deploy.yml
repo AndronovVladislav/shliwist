@@ -43,4 +43,4 @@ jobs:
             echo "${{ secrets.BACKEND_ENV_FILE }}" > src/env/.stable.env
             echo "${{ secrets.DOCKER_COMPOSE_ENV_FILE }}" > .env
             echo "${{ secrets.POSTGRES_SECRET_MANIFEST }}" > k8s/postgres/secret.yml
-            kubectl apply -f -R k8s/
+            kubectl apply -R -f k8s/
