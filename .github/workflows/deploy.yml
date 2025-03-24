@@ -6,8 +6,28 @@ on:
       - main
 
 jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PUSH_IMAGES_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:latest"
+          docker build -t $IMAGE .
+          docker push $IMAGE
+
   deploy:
     runs-on: ubuntu-latest
+    needs: build-and-push
 
     steps:
       - name: Deploy via SSH
@@ -21,5 +41,5 @@ jobs:
             git pull
             echo "${{ secrets.BACKEND_ENV_FILE }}" > src/env/.stable.env
             echo "${{ secrets.DOCKER_COMPOSE_ENV_FILE }}" > .env
-            echo "${{ secrets.POSTGRES_SECRET_MANIFEST }}" > k8s/postgres.yml
+            echo "${{ secrets.POSTGRES_SECRET_MANIFEST }}" > k8s/postgres/secret.yml
             kubectl apply -f -R k8s/
